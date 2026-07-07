@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plugin Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    body { 
+      background: #0a0c14; 
+      font-family: system-ui, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    
+    .plugin-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .plugin-card:hover {
+      transform: translateY(-8px);
+      border-color: #60a5fa;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .nav-tab {
+      transition: all 0.2s ease;
+    }
+    .nav-tab:hover {
+      background-color: #1f2937;
+    }
+    .tab-active {
+      background-color: #1f2937;
+      color: white;
+      font-weight: 600;
+    }
+
+    .badge-free {
+      background-color: #065f46;
+      color: #6ee7b7;
+      padding: 4px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .badge-premium {
+      background-color: #78350f;
+      color: #fcd34d;
+      padding: 4px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    canvas#snow{position:fixed;inset:0;pointer-events:none;z-index:1}
+    @media(prefers-reduced-motion:reduce){
+      canvas#snow{display:none}
+    }
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #060b14;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loading-text {
+      font-size: 1.2em;
+      letter-spacing: 4px;
+      margin-bottom: 25px;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .loading-bar {
+      width: 260px;
+      height: 4px;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .loading-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #ffffff;
+      animation: loadFill 3s linear forwards;
+    }
+    @keyframes loadFill {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+    body.loading {
+      overflow: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 12px; }
+    ::-webkit-scrollbar-track { background: #0a0c14; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #60a5fa, #818cf8);
+      border-radius: 8px;
+      border: 2px solid #0a0c14;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #93c5fd, #a5b4fc);
+    }
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: #60a5fa #0a0c14;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-200 loading">
+<div id="loading-screen">
+  <div class="loading-text">Loading</div>
+  <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+</div>
+<canvas id="snow" aria-hidden="true"></canvas>
+
+  <!-- Navbar -->
+  <nav class="bg-[#0a0c14] border-b border-slate-800 sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex flex-col lg:flex-row lg:items-center gap-4">
+
+        <!-- Main Tabs -->
+        <div class="flex bg-[#111827] rounded-2xl p-1 border border-slate-800">
+          <button onclick="showTab(0)" id="tab0" class="tab-active nav-tab px-6 py-3 rounded-xl transition-all text-sm">All Plugins</button>
+          <button onclick="showTab(1)" id="tab1" class="nav-tab px-6 py-3 rounded-xl transition-all text-sm">Free Plugins</button>
+          <button onclick="showTab(2)" id="tab2" class="nav-tab px-6 py-3 rounded-xl transition-all text-sm">Premium Plugins</button>
+        </div>
+
+        <!-- Server Setup (same box style as main tabs) -->
+        <div class="flex items-center gap-3 lg:ml-auto">
+          <div class="flex bg-[#111827] rounded-2xl p-1 border border-slate-800">
+            <button onclick="showTab(3)" id="tab3" class="nav-tab px-6 py-3 rounded-xl transition-all text-sm whitespace-nowrap">
+              Lifesteal Setup
+            </button>
+            <button onclick="showTab(4)" id="tab4" class="nav-tab px-6 py-3 rounded-xl transition-all text-sm whitespace-nowrap">
+              Survival Setup
+            </button>
+            <button onclick="showTab(5)" id="tab5" class="nav-tab px-6 py-3 rounded-xl transition-all text-sm whitespace-nowrap">
+              Vanilla Setup
+            </button>
+          </div>
+
+          <!-- Search -->
+          <div class="max-w-md w-full">
+            <div class="relative">
+              <input 
+                type="text" 
+                id="searchInput"
+                placeholder="Search plugins..." 
+                class="w-full bg-[#111827] border border-slate-700 rounded-2xl py-3.5 px-6 pl-12 focus:outline-none focus:border-slate-500 text-base placeholder:text-slate-500"
+                onkeyup="debouncedFilter()">
+              <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- Plugins Grid -->
+  <div class="container mx-auto px-6 py-8" style="position:relative;z-index:2;">
+    <div id="pluginsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Populated by JavaScript -->
+    </div>
+  </div>
+
+  <script>
+    const allPlugins = [
+      { name: "AdvancedVanish", url: "https://www.spigotmc.org/resources/advancedvanish.86036/", premium: false },
+      { name: "AjLeaderboards", url: "https://www.spigotmc.org/resources/ajleaderboards.85548/", premium: false },
+      { name: "AntiPopup", url: "https://www.spigotmc.org/resources/%E2%9C%A8-antipopup-no-chat-reports-and-popup-%E2%9C%A8.103782/", premium: false },
+      { name: "AutomaticBroadcast", url: "https://www.spigotmc.org/resources/automaticbroadcast-%C2%BB-placeholderapi-support-1-16-1-21.83455/", premium: false },
+      { name: "AxAfkZone", url: "https://www.spigotmc.org/resources/axafkzone-ultimate-afk-reward-plugin.119868/", premium: false },
+      { name: "AxCalendar", url: "https://builtbybit.com/resources/axcalendar-advent-calendar-plugin.35700/", premium: false },
+      { name: "AxInventoryRestore", url: "https://builtbybit.com/resources/axinventoryrestore-backups-to-shulkers.31037/", premium: false },
+      { name: "AxKills", url: "https://builtbybit.com/resources/axkills-customizable-kill-messages.31258/", premium: false },
+      { name: "AxPlayerWarps", url: "https://builtbybit.com/resources/axplayerwarps-the-all-in-one-solution.53526/", premium: false },
+      { name: "AxRewards", url: "https://builtbybit.com/resources/axrewards-all-in-one-rewards-plugin.40248/", premium: false },
+      { name: "AxTrade", url: "https://builtbybit.com/resources/axtrade-the-ultimate-trade-plugin.44747/", premium: false },
+      { name: "AxVaults", url: "https://builtbybit.com/resources/axvaults-the-ultimate-vaults-plugin.38410/", premium: false },
+      { name: "BetterRTP", url: "https://www.spigotmc.org/resources/betterrtp-random-wild-teleport.36081/", premium: false },
+      { name: "ChatGames", url: "https://www.spigotmc.org/resources/lite-chatgames-1-8-1-21.105831/", premium: false },
+      { name: "Chunky", url: "https://modrinth.com/plugin/chunky/versions?c=release&l=paper", premium: false },
+      { name: "ClickVillagers", url: "https://modrinth.com/plugin/clickvillagers/versions", premium: false },
+      { name: "CoinsEngine", url: "https://modrinth.com/plugin/excellenteconomy/versions", premium: false },
+      { name: "CombatLogX", url: "https://jenkins.sirblobman.xyz/job/SirBlobman/job/CombatLogX/job/main/", premium: false },
+      { name: "CoreProtect", url: "https://modrinth.com/plugin/coreprotect/versions", premium: false },
+      { name: "CrazyAuctions", url: "https://modrinth.com/plugin/crazyauctions/versions?c=release", premium: false },
+      { name: "DeluxeMenus", url: "https://ci.extendedclip.com/job/DeluxeMenus/", premium: false },
+      { name: "DeluxeTags", url: "https://www.spigotmc.org/resources/deluxetags.4390/", premium: false },
+      { name: "DiscordSRV", url: "https://modrinth.com/plugin/discordsrv/versions", premium: false },
+      { name: "EssentialsX", url: "https://essentialsx.net/downloads.html", premium: false },
+      { name: "ExcellentCrates", url: "https://www.spigotmc.org/resources/excellentcrates-%E2%AD%90-advanced-free-crates-plugin.48732/", premium: false },
+      { name: "FancyHolograms", url: "https://modrinth.com/plugin/fancyholograms/versions?c=release", premium: false },
+      { name: "FancyNpcs", url: "https://modrinth.com/plugin/fancynpcs/versions?c=release", premium: false },
+      { name: "FastAsyncWorldEdit", url: "https://ci.athion.net/job/FastAsyncWorldEdit/", premium: false },
+      { name: "FasterCrystals", url: "https://modrinth.com/plugin/fastercrystals/versions", premium: false },
+      { name: "Floodgate", url: "https://geysermc.org/download?project=floodgate", premium: false },
+      { name: "Geyser", url: "https://geysermc.org/download?project=geyser", premium: false },
+      { name: "InfiniteAnnouncements", url: "https://www.spigotmc.org/resources/infinite-announcements.71266/", premium: false },
+      { name: "InfiniteVillagerTrading", url: "https://modrinth.com/plugin/infinite-villager-trading/versions", premium: false },
+      { name: "ItemEdit", url: "https://modrinth.com/plugin/itemedit/versions", premium: false },
+      { name: "JustRTP", url: "https://www.spigotmc.org/resources/justrtp-lightweight-fast-randomtp.126602/", premium: false },
+      { name: "LifestealZ", url: "https://modrinth.com/plugin/lifestealz/versions?c=release", premium: false },
+      { name: "LPC", url: "https://www.spigotmc.org/resources/lpc-chat-formatter-1-7-10-1-21-5.68965/", premium: false },
+      { name: "LuckPerms", url: "https://luckperms.net/download", premium: false },
+      { name: "MiniMOTD", url: "https://modrinth.com/plugin/minimotd/versions", premium: false },
+      { name: "MultiverseCore", url: "https://dev.bukkit.org/projects/multiverse-core", premium: false },
+      { name: "NBTAPI", url: "https://modrinth.com/plugin/nbtapi/versions", premium: false },
+      { name: "NightCore", url: "https://modrinth.com/plugin/nightcore/versions", premium: false },
+      { name: "NuVotifier", url: "https://www.spigotmc.org/resources/nuvotifier.13449/", premium: false },
+      { name: "OneMace", url: "https://modrinth.com/plugin/onemace/versions?c=release", premium: false },
+      { name: "PacketEvents", url: "https://github.com/retrooper/packetevents/releases", premium: false },
+      { name: "PlaceHolderAPI", url: "https://www.spigotmc.org/resources/placeholderapi.6245/", premium: false },
+      { name: "PlayerKits2", url: "https://www.spigotmc.org/resources/playerkits-2-fully-configurable-kits-1-8-1-21-4.112616/", premium: false },
+      { name: "RocketPlaceholders", url: "https://www.spigotmc.org/resources/rocketplaceholders-custom-placeholders.82678/", premium: false },
+      { name: "ServerListPlus", url: "https://www.spigotmc.org/resources/serverlistplus.241/", premium: false },
+      { name: "Simple Voice Chat", url: "https://modrinth.com/plugin/simple-voice-chat/versions?c=release", premium: false },
+      { name: "SkBee", url: "https://modrinth.com/plugin/skbee/versions", premium: false },
+      { name: "SkinsRestorer", url: "https://modrinth.com/plugin/skinsrestorer/versions", premium: false },
+      { name: "Skript", url: "https://github.com/SkriptLang/Skript/releases/", premium: false },
+      { name: "Tab", url: "https://github.com/NEZNAMY/TAB/releases/", premium: false },
+      { name: "Vault", url: "https://www.spigotmc.org/resources/vault.34315/", premium: false },
+      { name: "VeinMiner", url: "https://modrinth.com/plugin/veinminer/versions?c=release", premium: false },
+      { name: "ViaBackwards", url: "https://modrinth.com/plugin/viabackwards/versions?c=release", premium: false },
+      { name: "ViaVersion", url: "https://modrinth.com/plugin/viaversion/versions?c=release", premium: false },
+      { name: "VariableEnderChests", url: "https://www.spigotmc.org/resources/variableenderchests-1-8-1-21-10-%E2%9A%A1asynchronous%E2%9A%A1%E2%9C%85no-dupes%E2%9C%85.102187/", premium: false },
+      { name: "VoidGen", url: "https://www.spigotmc.org/resources/voidgen.25391/", premium: false },
+      { name: "WorldGuard", url: "https://dev.bukkit.org/projects/worldguard/files", premium: false },
+      { name: "zSchedulers", url: "https://www.spigotmc.org/resources/zschedulers.112705/", premium: false },
+
+      // New Free Plugins
+      { name: "TotemGuard", url: "https://modrinth.com/plugin/totemguard/versions", premium: false },
+      { name: "UltimateAutoRestart", url: "https://www.spigotmc.org/resources/1-8-8-26-1-2-ultimateautorestart-need-an-autorestart-plugin-grab-the-best-one-today.64414/", premium: false },
+      { name: "PlatinumArenas", url: "https://www.spigotmc.org/resources/platinumarenas.121422/", premium: false },
+      { name: "Worlds", url: "https://modrinth.com/plugin/worlds-1/versions?c=release", premium: false },
+
+      // Premium Plugins
+      { name: "Alonsotags Pro", url: "https://www.spigotmc.org/resources/%E2%9C%85-alonsotags-pro-1-8-%E2%80%A2-textures-dyeable-color-gui-filter-locked-tags-hikaricp.85788/", premium: true },
+      { name: "AxAuctions", url: "https://builtbybit.com/resources/axauctions-all-in-one-auction-plugin.40242/", premium: true },
+      { name: "CrossTPA", url: "https://builtbybit.com/resources/crosstpa-cross-server-safe-smart.40937/", premium: true },
+      { name: "CrownCoinflips", url: "https://builtbybit.com/resources/crowncoinflips.61375/", premium: true },
+      { name: "CrownCore", url: "https://builtbybit.com/resources/crowncore.52753/", premium: true },
+      { name: "CrownTebexData", url: "https://builtbybit.com/resources/tebexdata.52755/", premium: true },
+      { name: "DeluxeCoinflip", url: "https://builtbybit.com/resources/deluxecoinflip.10475/", premium: true },
+      { name: "DonutCrates", url: "https://builtbybit.com/resources/donutcrates-pro-choosable-rewards.40973/", premium: true },
+      { name: "DonutHomes", url: "https://builtbybit.com/resources/donuthomes-multiple-homes.47186/", premium: true },
+      { name: "DonutLeaderboards", url: "https://builtbybit.com/resources/donutleaderboards-ultimate-replica.45118/", premium: true },
+      { name: "DonutLives", url: "https://builtbybit.com/resources/donutlives-ultimate-lives-plugin.42408/", premium: true },
+      { name: "DonutSell", url: "https://builtbybit.com/resources/donutsell-sell-sellall-worth-gui.45463/", premium: true },
+      { name: "DonutStats", url: "https://builtbybit.com/resources/donutstats-check-players-stats.59354/", premium: true },
+      { name: "DonutTeams", url: "https://builtbybit.com/resources/donutteams-cross-server-x-folia-teams.47187/", premium: true },
+      { name: "DonutTPA", url: "https://builtbybit.com/resources/donuttpa-modern-teleport-requests.62800/", premium: true },
+      { name: "LifestealCore", url: "https://builtbybit.com/resources/lifestealcore.48550/", premium: true },
+      { name: "LiteBans", url: "https://www.spigotmc.org/resources/litebans.3715/", premium: true },
+      { name: "ModernHomes", url: "https://builtbybit.com/resources/modern-homes-ui-based-efficient.30327/", premium: true },
+      { name: "PlaytimeRewards", url: "https://builtbybit.com/resources/playtime-rewards.66022/", premium: true },
+      { name: "Plugin-Hide-Pro", url: "https://www.spigotmc.org/resources/%E2%9C%94%EF%B8%8F-plugin-hide-pro-decide-which-commands-are-executable-and-visible-spigot-bungee-velocity-%E2%9C%94%EF%B8%8F.77112/", premium: true },
+      { name: "SwiftPay", url: "https://builtbybit.com/resources/swiftpay-light-economy-pay-plugin.54655/", premium: true },
+      { name: "UltraBounty", url: "https://builtbybit.com/resources/ultrabounty-donutsmp-bounties-x-folia.54738/", premium: true },
+      { name: "UltraHomes", url: "https://builtbybit.com/resources/ultrahomes-advanced-multi-home-system.73186/", premium: true },
+      { name: "UltraSingleBiome", url: "https://builtbybit.com/resources/ultrasinglebiome-cpvp-world-generator.52565/", premium: true },
+      { name: "VirtualSpawner", url: "https://builtbybit.com/resources/virtualspawner-corruption-sell-wands.28314/", premium: true },
+      { name: "Vulcan", url: "https://www.spigotmc.org/resources/vulcan-anti-cheat-advanced-cheat-detection-1-8-1-21-11.83626/", premium: true },
+      { name: "ZelHide", url: "https://builtbybit.com/resources/zelhide-hide-nametag-fake-skin.43579/", premium: true },
+      { name: "ZelTeams", url: "https://builtbybit.com/resources/zelteams-refreshed-with-v3.35015/", premium: true }
+    ];
+
+    let currentTab = 0;
+    let filterTimeout = null;
+
+    const lifestealPluginNames = new Set([
+      "AdvancedVanish", "AjLeaderboards", "AntiPopup", "AutomaticBroadcast", "AxAfkZone",
+      "AxInventoryRestore", "BetterRTP", "ChatGames", "CombatLogX", "CoinsEngine",
+      "DeluxeMenus", "EssentialsX", "ExcellentCrates", "FancyHolograms", "FancyNpcs",
+      "FastAsyncWorldEdit", "FasterCrystals", "Floodgate", "Geyser", "LPC", "LuckPerms", "NightCore", "PacketEvents", 
+      "PlaceHolderAPI", "PlayerKits2", "RocketPlaceholders", "Skript", "Tab", "Vault", 
+      "ViaBackwards", "ViaVersion", "WorldGuard", "zSchedulers", "AxAuctions", 
+      "CrownCore", "CrownTebexData", "LiteBans", "LifestealCore", 
+      "ModernHomes", "Plugin-Hide-Pro", "SwiftPay", "UltraBounty", "Vulcan", "ZelTeams", 
+      "DonutStats", "DonutTPA", "VariableEnderChests",
+      "Chunky", "TotemGuard", "UltimateAutoRestart", "PlatinumArenas", "Worlds"
+    ]);
+
+    const survivalPluginNames = new Set([
+      "AdvancedVanish", "AjLeaderboards", "AntiPopup", "AutomaticBroadcast", "AxAfkZone",
+      "AxInventoryRestore", "BetterRTP", "ChatGames", "CombatLogX", "CoinsEngine",
+      "DeluxeMenus", "EssentialsX", "ExcellentCrates", "FancyHolograms", "FancyNpcs",
+      "FastAsyncWorldEdit", "FasterCrystals", "Floodgate", "Geyser", "LPC", "LuckPerms", "NightCore", "PacketEvents", 
+      "PlaceHolderAPI", "PlayerKits2", "RocketPlaceholders", "Skript", "Tab", "Vault", 
+      "ViaBackwards", "ViaVersion", "WorldGuard", "zSchedulers", "AxAuctions", 
+      "CrownCore", "CrownTebexData", "LiteBans", "LifestealCore", 
+      "ModernHomes", "Plugin-Hide-Pro", "SwiftPay", "UltraBounty", "Vulcan", "ZelTeams", 
+      "DonutStats", "DonutTPA", "VariableEnderChests",
+      "Chunky", "TotemGuard", "UltimateAutoRestart", "PlatinumArenas", "Worlds",
+      "VirtualSpawner"
+    ]);
+
+    const vanillaPluginNames = new Set([
+      "Simple Voice Chat", "Skript", "SkBee", "ClickVillagers", "DiscordSRV",
+      "FastAsyncWorldEdit", "LPC", "OneMace", "PlaceHolderAPI", "Tab",
+      "ViaVersion", "ViaBackwards", "WorldGuard", "Vault", "Plugin-Hide-Pro",
+      "PacketEvents", "LuckPerms", "MiniMOTD", "LifestealCore"
+    ]);
+
+    function createPluginCard(plugin) {
+      const badge = plugin.premium 
+        ? `<span class="badge-premium">Premium</span>`
+        : `<span class="badge-free">Free</span>`;
+
+      return `
+        <div class="plugin-card rounded-3xl p-6">
+          <div class="flex justify-between items-start mb-6">
+            <h3 class="text-lg font-semibold text-white">${plugin.name}</h3>
+            ${badge}
+          </div>
+          
+          <a href="${plugin.url}" target="_blank"
+             class="block w-full text-center bg-slate-800 hover:bg-slate-700 font-medium py-4 rounded-2xl transition-all text-sm">
+            Open Plugin Page
+          </a>
+        </div>
+      `;
+    }
+
+    function renderPlugins(pluginsToShow) {
+      const grid = document.getElementById('pluginsGrid');
+      grid.innerHTML = pluginsToShow.map(p => createPluginCard(p)).join('');
+    }
+
+    function filterPlugins() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      let filtered = [...allPlugins];
+
+      if (currentTab === 1) filtered = filtered.filter(p => !p.premium);
+      else if (currentTab === 2) filtered = filtered.filter(p => p.premium);
+      else if (currentTab === 3) filtered = filtered.filter(p => lifestealPluginNames.has(p.name));
+      else if (currentTab === 4) filtered = filtered.filter(p => survivalPluginNames.has(p.name));
+      else if (currentTab === 5) filtered = filtered.filter(p => vanillaPluginNames.has(p.name));
+
+      if (currentTab === 0) {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+      } else if (currentTab === 3 || currentTab === 4 || currentTab === 5) {
+        filtered.sort((a, b) => {
+          if (a.premium !== b.premium) {
+            return a.premium ? 1 : -1;
+          }
+          return a.name.localeCompare(b.name);
+        });
+      }
+
+      if (searchTerm) {
+        filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
+      }
+
+      renderPlugins(filtered);
+    }
+
+    function debouncedFilter() {
+      clearTimeout(filterTimeout);
+      filterTimeout = setTimeout(filterPlugins, 120);
+    }
+
+    function showTab(tabIndex) {
+      currentTab = tabIndex;
+      document.getElementById('searchInput').value = '';
+      
+      for (let i = 0; i < 6; i++) {
+        const tab = document.getElementById(`tab${i}`);
+        if (tab) tab.classList.toggle('tab-active', i === tabIndex);
+      }
+      filterPlugins();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's')) e.preventDefault();
+    });
+
+    window.onload = () => showTab(0);
+  </script>
+
+  <script>
+  setTimeout(() => {
+    const ls = document.getElementById('loading-screen');
+    ls.classList.add('hidden');
+    document.body.classList.remove('loading');
+    setTimeout(() => ls.remove(), 500);
+  }, 3000);
+  </script>
+
+  <script>
+  (function(){
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cv = document.getElementById('snow');
+    if(reduced){ cv.remove(); return; }
+    const ctx = cv.getContext('2d');
+    let W,H,flakes=[];
+    function size(){ W = cv.width = innerWidth; H = cv.height = innerHeight; }
+    addEventListener('resize', size); size();
+    for(let i=0;i<90;i++){
+      flakes.push({
+        x:Math.random()*W, y:Math.random()*H,
+        r:.8+Math.random()*2.4,
+        vy:.3+Math.random()*.8,
+        drift:Math.random()*Math.PI*2,
+        ds:.004+Math.random()*.01,
+        o:.25+Math.random()*.55
+      });
+    }
+    (function tick(){
+      ctx.clearRect(0,0,W,H);
+      for(const f of flakes){
+        f.y += f.vy;
+        f.drift += f.ds;
+        f.x += Math.sin(f.drift)*.4;
+        if(f.y > H+5){ f.y = -5; f.x = Math.random()*W; }
+        ctx.beginPath();
+        ctx.arc(f.x,f.y,f.r,0,7);
+        ctx.fillStyle = `rgba(220,238,255,${f.o})`;
+        ctx.fill();
+      }
+      requestAnimationFrame(tick);
+    })();
+  })();
+  </script>
+</body>
+</html>
