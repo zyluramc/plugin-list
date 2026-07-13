@@ -132,19 +132,16 @@
 </div>
 <canvas id="snow" aria-hidden="true"></canvas>
 
-  <!-- Navbar -->
   <nav class="bg-[#0a0c14] border-b border-slate-800 sticky top-0 z-50">
     <div class="container mx-auto px-6 py-4">
       <div class="flex flex-col lg:flex-row lg:items-center gap-4">
 
-        <!-- Main Tabs -->
         <div class="flex bg-[#111827] rounded-2xl p-1 border border-slate-800">
           <button onclick="showTab(0)" id="tab0" class="tab-active nav-tab px-6 py-3 rounded-xl transition-all text-sm">All Plugins</button>
           <button onclick="showTab(1)" id="tab1" class="nav-tab px-6 py-3 rounded-xl transition-all text-sm">Free Plugins</button>
           <button onclick="showTab(2)" id="tab2" class="nav-tab px-6 py-3 rounded-xl transition-all text-sm">Premium Plugins</button>
         </div>
 
-        <!-- Server Setup (same box style as main tabs) -->
         <div class="flex items-center gap-3 lg:ml-auto">
           <div class="flex bg-[#111827] rounded-2xl p-1 border border-slate-800">
             <button onclick="showTab(3)" id="tab3" class="nav-tab px-6 py-3 rounded-xl transition-all text-sm whitespace-nowrap">
@@ -158,7 +155,6 @@
             </button>
           </div>
 
-          <!-- Search -->
           <div class="max-w-md w-full">
             <div class="relative">
               <input 
@@ -176,10 +172,8 @@
     </div>
   </nav>
 
-  <!-- Plugins Grid -->
   <div class="container mx-auto px-6 py-8" style="position:relative;z-index:2;">
     <div id="pluginsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <!-- Populated by JavaScript -->
     </div>
   </div>
 
@@ -203,6 +197,7 @@
       { name: "ClickVillagers", url: "https://modrinth.com/plugin/clickvillagers/versions", premium: false },
       { name: "CoinsEngine", url: "https://modrinth.com/plugin/excellenteconomy/versions", premium: false },
       { name: "CombatLogX", url: "https://jenkins.sirblobman.xyz/job/SirBlobman/job/CombatLogX/job/main/", premium: false },
+      { name: "CommandWhitelist", url: "https://modrinth.com/plugin/commandwhitelist", premium: false },
       { name: "CoreProtect", url: "https://modrinth.com/plugin/coreprotect/versions", premium: false },
       { name: "CrazyAuctions", url: "https://modrinth.com/plugin/crazyauctions/versions?c=release", premium: false },
       { name: "DeluxeMenus", url: "https://ci.extendedclip.com/job/DeluxeMenus/", premium: false },
@@ -215,11 +210,13 @@
       { name: "FastAsyncWorldEdit", url: "https://ci.athion.net/job/FastAsyncWorldEdit/", premium: false },
       { name: "FasterCrystals", url: "https://modrinth.com/plugin/fastercrystals/versions", premium: false },
       { name: "Floodgate", url: "https://geysermc.org/download?project=floodgate", premium: false },
+      { name: "Gaia", url: "https://modrinth.com/plugin/gaia", premium: false },
       { name: "Geyser", url: "https://geysermc.org/download?project=geyser", premium: false },
       { name: "InfiniteAnnouncements", url: "https://www.spigotmc.org/resources/infinite-announcements.71266/", premium: false },
       { name: "InfiniteVillagerTrading", url: "https://modrinth.com/plugin/infinite-villager-trading/versions", premium: false },
       { name: "ItemEdit", url: "https://modrinth.com/plugin/itemedit/versions", premium: false },
       { name: "JustRTP", url: "https://www.spigotmc.org/resources/justrtp-lightweight-fast-randomtp.126602/", premium: false },
+      { name: "KnockbackSync", url: "https://modrinth.com/plugin/knockbacksync", premium: false },
       { name: "LifestealZ", url: "https://modrinth.com/plugin/lifestealz/versions?c=release", premium: false },
       { name: "LPC", url: "https://www.spigotmc.org/resources/lpc-chat-formatter-1-7-10-1-21-5.68965/", premium: false },
       { name: "LuckPerms", url: "https://luckperms.net/download", premium: false },
@@ -232,6 +229,8 @@
       { name: "PacketEvents", url: "https://github.com/retrooper/packetevents/releases", premium: false },
       { name: "PlaceHolderAPI", url: "https://www.spigotmc.org/resources/placeholderapi.6245/", premium: false },
       { name: "PlayerKits2", url: "https://www.spigotmc.org/resources/playerkits-2-fully-configurable-kits-1-8-1-21-4.112616/", premium: false },
+      { name: "PlayerPoints", url: "https://modrinth.com/plugin/playerpoints/versions", premium: false },
+      { name: "PlugManX", url: "https://modrinth.com/plugin/plugmanx/versions", premium: false },
       { name: "RocketPlaceholders", url: "https://www.spigotmc.org/resources/rocketplaceholders-custom-placeholders.82678/", premium: false },
       { name: "ServerListPlus", url: "https://www.spigotmc.org/resources/serverlistplus.241/", premium: false },
       { name: "Simple Voice Chat", url: "https://modrinth.com/plugin/simple-voice-chat/versions?c=release", premium: false },
@@ -248,13 +247,11 @@
       { name: "WorldGuard", url: "https://dev.bukkit.org/projects/worldguard/files", premium: false },
       { name: "zSchedulers", url: "https://www.spigotmc.org/resources/zschedulers.112705/", premium: false },
 
-      // New Free Plugins
       { name: "TotemGuard", url: "https://modrinth.com/plugin/totemguard/versions", premium: false },
       { name: "UltimateAutoRestart", url: "https://www.spigotmc.org/resources/1-8-8-26-1-2-ultimateautorestart-need-an-autorestart-plugin-grab-the-best-one-today.64414/", premium: false },
       { name: "PlatinumArenas", url: "https://www.spigotmc.org/resources/platinumarenas.121422/", premium: false },
       { name: "Worlds", url: "https://modrinth.com/plugin/worlds-1/versions?c=release", premium: false },
 
-      // Premium Plugins
       { name: "Alonsotags Pro", url: "https://www.spigotmc.org/resources/%E2%9C%85-alonsotags-pro-1-8-%E2%80%A2-textures-dyeable-color-gui-filter-locked-tags-hikaricp.85788/", premium: true },
       { name: "AxAuctions", url: "https://builtbybit.com/resources/axauctions-all-in-one-auction-plugin.40242/", premium: true },
       { name: "CrossTPA", url: "https://builtbybit.com/resources/crosstpa-cross-server-safe-smart.40937/", premium: true },
@@ -275,6 +272,7 @@
       { name: "ModernHomes", url: "https://builtbybit.com/resources/modern-homes-ui-based-efficient.30327/", premium: true },
       { name: "PlaytimeRewards", url: "https://builtbybit.com/resources/playtime-rewards.66022/", premium: true },
       { name: "Plugin-Hide-Pro", url: "https://www.spigotmc.org/resources/%E2%9C%94%EF%B8%8F-plugin-hide-pro-decide-which-commands-are-executable-and-visible-spigot-bungee-velocity-%E2%9C%94%EF%B8%8F.77112/", premium: true },
+      { name: "SusNoMoreCheaters", url: "https://builtbybit.com/resources/sus-no-more-cheaters.73666/", premium: true },
       { name: "SwiftPay", url: "https://builtbybit.com/resources/swiftpay-light-economy-pay-plugin.54655/", premium: true },
       { name: "UltraBounty", url: "https://builtbybit.com/resources/ultrabounty-donutsmp-bounties-x-folia.54738/", premium: true },
       { name: "UltraHomes", url: "https://builtbybit.com/resources/ultrahomes-advanced-multi-home-system.73186/", premium: true },
@@ -291,9 +289,9 @@
     const lifestealPluginNames = new Set([
       "AdvancedVanish", "AjLeaderboards", "AntiPopup", "AutomaticBroadcast", "AxAfkZone",
       "AxInventoryRestore", "BetterRTP", "ChatGames", "CombatLogX", "CoinsEngine",
-      "DeluxeMenus", "EssentialsX", "ExcellentCrates", "FancyHolograms", "FancyNpcs",
-      "FastAsyncWorldEdit", "FasterCrystals", "Floodgate", "Geyser", "LPC", "LuckPerms", "NightCore", "PacketEvents", 
-      "PlaceHolderAPI", "PlayerKits2", "RocketPlaceholders", "Skript", "Tab", "Vault", 
+      "CommandWhitelist", "DeluxeMenus", "EssentialsX", "ExcellentCrates", "FancyHolograms", "FancyNpcs",
+      "FastAsyncWorldEdit", "FasterCrystals", "Floodgate", "Gaia", "Geyser", "KnockbackSync", "LPC", "LuckPerms", "NightCore", "PacketEvents", 
+      "PlaceHolderAPI", "PlayerKits2", "PlayerPoints", "PlugManX", "RocketPlaceholders", "Skript", "Tab", "Vault", 
       "ViaBackwards", "ViaVersion", "WorldGuard", "zSchedulers", "AxAuctions", 
       "CrownCore", "CrownTebexData", "LiteBans", "LifestealCore", 
       "ModernHomes", "Plugin-Hide-Pro", "SwiftPay", "UltraBounty", "Vulcan", "ZelTeams", 
@@ -304,9 +302,9 @@
     const survivalPluginNames = new Set([
       "AdvancedVanish", "AjLeaderboards", "AntiPopup", "AutomaticBroadcast", "AxAfkZone",
       "AxInventoryRestore", "BetterRTP", "ChatGames", "CombatLogX", "CoinsEngine",
-      "DeluxeMenus", "EssentialsX", "ExcellentCrates", "FancyHolograms", "FancyNpcs",
-      "FastAsyncWorldEdit", "FasterCrystals", "Floodgate", "Geyser", "LPC", "LuckPerms", "NightCore", "PacketEvents", 
-      "PlaceHolderAPI", "PlayerKits2", "RocketPlaceholders", "Skript", "Tab", "Vault", 
+      "CommandWhitelist", "DeluxeMenus", "EssentialsX", "ExcellentCrates", "FancyHolograms", "FancyNpcs",
+      "FastAsyncWorldEdit", "FasterCrystals", "Floodgate", "Gaia", "Geyser", "KnockbackSync", "LPC", "LuckPerms", "NightCore", "PacketEvents", 
+      "PlaceHolderAPI", "PlayerKits2", "PlayerPoints", "PlugManX", "RocketPlaceholders", "Skript", "Tab", "Vault", 
       "ViaBackwards", "ViaVersion", "WorldGuard", "zSchedulers", "AxAuctions", 
       "CrownCore", "CrownTebexData", "LiteBans", "LifestealCore", 
       "ModernHomes", "Plugin-Hide-Pro", "SwiftPay", "UltraBounty", "Vulcan", "ZelTeams", 
